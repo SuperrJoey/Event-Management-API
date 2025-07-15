@@ -1,7 +1,7 @@
 const pool = require('../models/db');
 const { isPastDate } = require('../utils/validators');
 
-
+//Creating event
 const createEvent = async (req, res) => {
     try {
         const { title, date_time, location, capacity } = req.body;
@@ -26,6 +26,7 @@ const createEvent = async (req, res) => {
     }
 };
 
+//Getting event details
 const getEventDetails = async (req, res) => {
     const eventId = req.params.id;
 
@@ -53,6 +54,7 @@ const getEventDetails = async (req, res) => {
     }
 };
 
+//Registering for Event
 const registerForEvent = async (req, res) => {
   const eventId = req.params.id;
   const { user_id } = req.body;
@@ -69,7 +71,7 @@ const registerForEvent = async (req, res) => {
     if (isPastDate(event.date_time))
       return res.status(400).json({ error: 'Cannot register for a past event' });
 
-    // Check if already registered
+    // Checking if already registered
     const exists = await pool.query(
       'SELECT 1 FROM event_registrations WHERE event_id = $1 AND user_id = $2',
       [eventId, user_id]
@@ -77,7 +79,7 @@ const registerForEvent = async (req, res) => {
     if (exists.rows.length > 0)
       return res.status(409).json({ error: 'User already registered for this event' });
 
-    // Check if event is full
+    // Checking if event is full
     const regCount = await pool.query(
       'SELECT COUNT(*) FROM event_registrations WHERE event_id = $1',
       [eventId]
@@ -98,6 +100,7 @@ const registerForEvent = async (req, res) => {
   }
 };
 
+//Cancelling registration
 const cancelRegistration = async (req, res) => {
   const { id: eventId, userId } = req.params;
 
@@ -117,6 +120,7 @@ const cancelRegistration = async (req, res) => {
   }
 };
 
+//listing upcoming events
 const listUpcomingEvents = async (req, res) => {
   try {
     const result = await pool.query(
@@ -130,6 +134,7 @@ const listUpcomingEvents = async (req, res) => {
   }
 };
 
+//getting event stats
 const getEventStats = async (req, res) => {
   const eventId = req.params.id;
 
